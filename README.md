@@ -15,7 +15,8 @@ This mapping looks like this:
 cell-hash + offset -> instruction
 ```
 
-This implementation is able to generate a coverage report for the contract by BoC and logs from the sandbox.
+This implementation is able to generate a coverage report for the contract by BoC and logs
+from [Sandbox](https://github.com/ton-org/sandbox).
 The proof of concept can be found in the [`./src/coverage`](./src/coverage) folder.
 
 `instructionNameForOpcode()` function can be used to get the name of the instruction for a given opcode, which is useful
@@ -29,3 +30,5 @@ where it successfully decompiled and compiled all contracts into equivalent **Ce
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+MIT © [TON Studio](https://tonstudio.io).
