@@ -124,4 +124,14 @@ export class CodeBuilder extends Builder {
         dict.storeDirect(this)
         return this
     }
+
+    public reinitFrom(other: CodeBuilder): this {
+        // @ts-expect-error hack
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this._bits = other._bits
+        // @ts-expect-error hack
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        this._refs = other._refs
+        return this
+    }
 }

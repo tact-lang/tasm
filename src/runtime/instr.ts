@@ -6,6 +6,7 @@ import type {Instr} from "./instr-gen"
 import {rangeToType, storeMapping} from "./instr-gen"
 import type {Mapping} from "./builder"
 import {CodeBuilder} from "./builder"
+import {compileInstructions} from "./compile"
 
 export const instr: $.Type<Instr> = {
     store: (b, t) => {
@@ -64,9 +65,7 @@ export const codeType = (): $.Type<codeType> => {
             return arr
         },
         store(b, t) {
-            for (const it of t) {
-                instr.store(b, it)
-            }
+            compileInstructions(b, t)
         },
     }
 }
