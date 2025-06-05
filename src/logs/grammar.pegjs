@@ -13,11 +13,11 @@ vmLine
 
 VmStack
   = "stack: " stack:$[^\r\n]* {
-    return { $: 'VmRawStack', stack };
+    return { $: 'VmStack', stack };
   }
 
 VmLoc
-  = "code cell hash:" hash:hex " offset:" offset:number {
+  = "code cell hash:" space* hash:hex space+ "offset:" space* offset:number {
     return { $: 'VmLoc', hash: hash.trim(), offset };
   }
 
@@ -48,7 +48,7 @@ VmExceptionHandler
 
 VmFinalC5
   = "final c5:" value:Cell {
-    return { $: 'VmFinalC5', value: { value: value.boc }};
+    return { $: 'VmFinalC5', value };
   }
 
 VmUnknown
@@ -74,7 +74,7 @@ VmStackValue
     / CellSlice
     / Unknown
   ) space* {
-    return value;
+    return { $: "VmStackValue", value };
   }
 
 Null
@@ -98,17 +98,17 @@ TupleParen
 
 Cell
   = "C{" value:hex "}" {
-    return { $: "Cell", boc: value };
+    return { $: "Cell", value };
   }
 
 Continuation
   = "Cont{" value:$[A-Za-z_0-9]* "}" {
-    return { $: "Continuation", name: value };
+    return { $: "Continuation", value };
   }
 
 Builder
   = "BC{" value:hex "}" {
-    return { $: "Builder", hex: value };
+    return { $: "Builder", value };
   }
 
 Unknown
@@ -157,8 +157,8 @@ CellSliceShortBody
   }
 
 number
-  = "-"? digits:$[0-9]+ {
-    return { op: "", value: digits };
+  = op:"-"? digits:$[0-9]+ {
+    return { op: op || undefined, value: digits };
   }
 
 hex

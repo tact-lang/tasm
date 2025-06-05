@@ -63,7 +63,7 @@ export type VmUnknown = {
 
 export const parse = (log: string): VmLine[] => {
     const lines = log.split("\n")
-    const vmLines = lines.map(line => parseLine(line))
+    const vmLines = lines.map(line => parseLine(line.trim()))
 
     return vmLines.map(it => processVmLine(it))
 }

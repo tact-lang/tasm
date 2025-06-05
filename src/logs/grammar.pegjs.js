@@ -190,7 +190,7 @@ function peg$parse(input, options) {
 
     const peg$c0 = "stack: "
     const peg$c1 = "code cell hash:"
-    const peg$c2 = " offset:"
+    const peg$c2 = "offset:"
     const peg$c3 = "execute "
     const peg$c4 = "changing gas limit to "
     const peg$c5 = "gas remaining: "
@@ -228,7 +228,7 @@ function peg$parse(input, options) {
     const peg$e0 = peg$literalExpectation("stack: ", false)
     const peg$e1 = peg$classExpectation(["\r", "\n"], true, false, false)
     const peg$e2 = peg$literalExpectation("code cell hash:", false)
-    const peg$e3 = peg$literalExpectation(" offset:", false)
+    const peg$e3 = peg$literalExpectation("offset:", false)
     const peg$e4 = peg$literalExpectation("execute ", false)
     const peg$e5 = peg$literalExpectation("changing gas limit to ", false)
     const peg$e6 = peg$literalExpectation("gas remaining: ", false)
@@ -279,7 +279,7 @@ function peg$parse(input, options) {
     const peg$e34 = peg$classExpectation([" ", "\t", "\r", "\n"], false, false, false)
 
     function peg$f0(stack) {
-        return {$: "VmRawStack", stack}
+        return {$: "VmStack", stack}
     }
     function peg$f1(hash, offset) {
         return {$: "VmLoc", hash: hash.trim(), offset}
@@ -300,7 +300,7 @@ function peg$parse(input, options) {
         return {$: "VmExceptionHandler", errno}
     }
     function peg$f7(value) {
-        return {$: "VmFinalC5", value: {value: value.boc}}
+        return {$: "VmFinalC5", value}
     }
     function peg$f8(text) {
         return {$: "VmUnknown", text: text.trim()}
@@ -309,7 +309,7 @@ function peg$parse(input, options) {
         return {$: "VmParsedStack", values}
     }
     function peg$f10(value) {
-        return value
+        return {$: "VmStackValue", value}
     }
     function peg$f11() {
         return {$: "Null"}
@@ -327,13 +327,13 @@ function peg$parse(input, options) {
         return {$: "Tuple", elements}
     }
     function peg$f16(value) {
-        return {$: "Cell", boc: value}
+        return {$: "Cell", value}
     }
     function peg$f17(value) {
-        return {$: "Continuation", name: value}
+        return {$: "Continuation", value}
     }
     function peg$f18(value) {
-        return {$: "Builder", hex: value}
+        return {$: "Builder", value}
     }
     function peg$f19() {
         return {$: "Unknown", value: ""}
@@ -370,8 +370,8 @@ function peg$parse(input, options) {
     function peg$f24(value) {
         return {value}
     }
-    function peg$f25(digits) {
-        return {op: "", value: digits}
+    function peg$f25(op, digits) {
+        return {op: op || undefined, value: digits}
     }
     let peg$currPos = options.peg$currPos | 0
     let peg$savedPos = peg$currPos
@@ -624,7 +624,7 @@ function peg$parse(input, options) {
     }
 
     function peg$parseVmLoc() {
-        let s0, s1, s2, s3, s4
+        let s0, s1, s2, s3, s4, s5, s6, s7
 
         s0 = peg$currPos
         if (input.substr(peg$currPos, 15) === peg$c1) {
@@ -637,21 +637,48 @@ function peg$parse(input, options) {
             }
         }
         if (s1 !== peg$FAILED) {
-            s2 = peg$parsehex()
-            if (input.substr(peg$currPos, 8) === peg$c2) {
-                s3 = peg$c2
-                peg$currPos += 8
-            } else {
-                s3 = peg$FAILED
-                if (peg$silentFails === 0) {
-                    peg$fail(peg$e3)
-                }
+            s2 = []
+            s3 = peg$parsespace()
+            while (s3 !== peg$FAILED) {
+                s2.push(s3)
+                s3 = peg$parsespace()
             }
-            if (s3 !== peg$FAILED) {
-                s4 = peg$parsenumber()
-                if (s4 !== peg$FAILED) {
-                    peg$savedPos = s0
-                    s0 = peg$f1(s2, s4)
+            s3 = peg$parsehex()
+            s4 = []
+            s5 = peg$parsespace()
+            if (s5 !== peg$FAILED) {
+                while (s5 !== peg$FAILED) {
+                    s4.push(s5)
+                    s5 = peg$parsespace()
+                }
+            } else {
+                s4 = peg$FAILED
+            }
+            if (s4 !== peg$FAILED) {
+                if (input.substr(peg$currPos, 7) === peg$c2) {
+                    s5 = peg$c2
+                    peg$currPos += 7
+                } else {
+                    s5 = peg$FAILED
+                    if (peg$silentFails === 0) {
+                        peg$fail(peg$e3)
+                    }
+                }
+                if (s5 !== peg$FAILED) {
+                    s6 = []
+                    s7 = peg$parsespace()
+                    while (s7 !== peg$FAILED) {
+                        s6.push(s7)
+                        s7 = peg$parsespace()
+                    }
+                    s7 = peg$parsenumber()
+                    if (s7 !== peg$FAILED) {
+                        peg$savedPos = s0
+                        s0 = peg$f1(s3, s7)
+                    } else {
+                        peg$currPos = s0
+                        s0 = peg$FAILED
+                    }
                 } else {
                     peg$currPos = s0
                     s0 = peg$FAILED
@@ -1748,7 +1775,7 @@ function peg$parse(input, options) {
         }
         if (s2 !== peg$FAILED) {
             peg$savedPos = s0
-            s0 = peg$f25(s2)
+            s0 = peg$f25(s1, s2)
         } else {
             peg$currPos = s0
             s0 = peg$FAILED
