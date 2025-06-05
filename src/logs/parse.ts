@@ -1,4 +1,4 @@
-import * as $ from "@tonstudio/parser-runtime"
+import * as $ from "./grammar.pegjs.js"
 import * as G from "./grammar"
 import type {Stack, StackElement} from "./stack"
 import VmParsedStack = G.$ast.VmParsedStack
@@ -69,18 +69,13 @@ export const parse = (log: string): VmLine[] => {
 }
 
 const parseLine = (line: string): G.$ast.vmLine => {
-    const res = $.parse({
-        grammar: G.vmLine,
-        space: G.space,
-        text: line,
-    })
-    if (res.$ === "success") {
-        return res.value
-    }
-    return {
-        $: "VmUnknown",
-        text: line,
-        loc: $.emptyLoc(0),
+    try {
+        return $.parse(line, {startRule: "vmLine"}) as G.$ast.vmLine
+    } catch {
+        return {
+            $: "VmUnknown",
+            text: line,
+        }
     }
 }
 
@@ -169,15 +164,11 @@ const parseStack = (line: string) => {
 }
 
 const tryParseStack = (line: string) => {
-    const res = $.parse({
-        grammar: G.VmParsedStack,
-        space: G.space,
-        text: line,
-    })
-    if (res.$ === "success") {
-        return res.value
+    try {
+        return $.parse(line, {startRule: "VmParsedStack"}) as G.$ast.VmParsedStack
+    } catch {
+        return undefined
     }
-    return undefined
 }
 
 const processStack = (stack: VmParsedStack): StackElement[] => {

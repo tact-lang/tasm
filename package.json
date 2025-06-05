@@ -20,7 +20,10 @@
         "coverage": "c8 jest",
         "gen:grammar": "pgen src/text/grammar.gg -o src/text/grammar.ts",
         "gen:grammar:logs": "pgen src/logs/grammar.gg -o src/logs/grammar.ts",
-        "gen:asm": "ts-node src/generator/gen-constructors.ts && ts-node src/generator/gen-converter.ts && ts-node src/generator/gen-instr.ts && ts-node src/generator/gen-printer.ts && ts-node src/generator/gen-types.ts && yarn fmt"
+        "gen:asm": "ts-node src/generator/gen-constructors.ts && ts-node src/generator/gen-converter.ts && ts-node src/generator/gen-instr.ts && ts-node src/generator/gen-printer.ts && ts-node src/generator/gen-types.ts && yarn fmt",
+        "peggy:build": "peggy --dts -o src/logs/grammar.pegjs.js --allowed-start-rules vmLine,VmParsedStack src/logs/grammar.pegjs",
+        "assembler": "node dist/src/cli/assembler.js",
+        "disassembler": "node dist/src/cli/disassembler.js"
     },
     "dependencies": {
         "@ton/core": "^0.60.1",
@@ -49,6 +52,7 @@
         "eslint-plugin-unused-imports": "^4.1.4",
         "husky": "^9.1.7",
         "jest": "^29.7.0",
+        "peggy": "^5.0.3",
         "prettier": "^3.5.3",
         "terser": "^5.40.0",
         "ts-jest": "^29.2.6",
