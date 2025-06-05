@@ -116,23 +116,9 @@ Unknown
 
 CellSlice
   = "CS{" body:(CellSliceBody / CellSliceShortBody) "}" {
-    if (body.bits && body.refs) {
-      return { 
-        $: "Slice", 
-        hex: body.value,
-        startBit: body.bits.start,
-        endBit: body.bits.end,
-        startRef: body.refs.start,
-        endRef: body.refs.end
-      };
-    }
-    return { 
-      $: "Slice", 
-      hex: body.value,
-      startBit: 0,
-      endBit: 0,
-      startRef: 0,
-      endRef: 0
+    return {
+      $: "CellSlice",
+      body
     };
   }
 
