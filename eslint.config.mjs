@@ -34,6 +34,8 @@ export default tseslint.config(
             "src/text/convert.ts",
             "src/text/printer-gen.ts",
             "src/logs/grammar.ts",
+            "src/logs/grammar.pegjs.d.ts",
+            "src/logs/grammar.pegjs.js",
             "src/debugger/cli/debugger.ts",
             "src/dict/**",
         ],
