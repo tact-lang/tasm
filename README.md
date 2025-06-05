@@ -27,6 +27,59 @@ The proof of concept can be found in the [`./src/coverage`](./src/coverage) fold
 `instructionNameForOpcode()` function can be used to get the name of the instruction for a given opcode, which is useful
 for runtime debugging with TVM since TVM itself provides only integer opcodes.
 
+## CLI Tools
+
+This package includes two command-line utilities for working with TON Assembly:
+
+### Assembler
+
+Compile TVM Assembly files to BOC format:
+
+```bash
+# Install globally
+npm install -g ton-assembly
+
+# Use the assembler
+tasm contract.tasm -o contract.boc
+
+# Or via yarn scripts
+yarn assembler contract.tasm -o contract.boc
+```
+
+### Disassembler
+
+Disassemble BOC files back to TVM Assembly:
+
+```bash
+# Use the disassembler
+disasm contract.boc -o contract.tasm
+
+# Or via yarn scripts
+yarn disassembler contract.boc -o contract.tasm
+```
+
+Both tools support multiple output formats (binary, hex, base64) and provide verbose output options.
+
+#### Example Usage
+
+```bash
+# Compile assembly to BOC
+tasm contract.tasm -o contract.boc --verbose
+
+# Disassemble BOC back to assembly
+disasm contract.boc -o decompiled.tasm --verbose
+
+# Full round-trip test
+tasm decompiled.tasm -o recompiled.boc
+# contract.boc and recompiled.boc should be identical!
+
+# Work with different formats
+tasm contract.tasm -f hex > contract.hex
+disasm contract.hex -f hex -o contract.tasm
+```
+
+See [CLI documentation](./src/cli/README.md) for detailed usage instructions.
+
 ## Validity
 
 The assembler was tested on 106k contracts from the blockchain

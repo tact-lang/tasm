@@ -1,6 +1,16 @@
 {
     "name": "ton-assembly",
     "version": "0.0.1",
+    "description": "TON assembler and disassembler",
+    "keywords": [
+        "ton",
+        "tvm",
+        "assembly",
+        "assembler",
+        "disassembler",
+        "blockchain",
+        "smart-contracts"
+    ],
     "scripts": {
         "build": "tsc --declaration",
         "lint": "eslint --cache .",
@@ -14,7 +24,8 @@
     },
     "dependencies": {
         "@ton/core": "^0.60.1",
-        "@tonstudio/parser-runtime": "^0.0.1"
+        "@tonstudio/parser-runtime": "^0.0.1",
+        "cac": "^6.7.14"
     },
     "peerDependencies": {
         "@ton/core": ">=0.60.1"
@@ -71,10 +82,14 @@
         "!dist/**/test/**",
         "!dist/generator/**",
         "!dist/helpers/**",
-        "!dist/cli/**",
+        "dist/cli/**",
         "!dist/debugger/**",
         "!*.d.ts.map",
         "!*.js.map"
     ],
-    "packageManager": "yarn@4.6.0"
+    "packageManager": "yarn@4.6.0",
+    "bin": {
+        "disasm": "./dist/cli/disassembler.js",
+        "tasm": "./dist/cli/assembler.js"
+    }
 }
