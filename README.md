@@ -6,6 +6,11 @@ This implementation provides a complete cycle
 `Text -> Internal representation -> Cells -> BoC -> Cells -> Internal representation -> Text`, this means that the same
 text assembly can be obtained from a text assembly, going through all the compilation and decompilation steps.
 
+The assembler correctly handles cases where the code does not fit into a single cell and automatically
+creates a separate reference for the remaining code.
+Current implementation optimizes cases where the reference can be folded into more efficient instructions
+(e.g. `IF` into `IFREF`), thereby optimizing gas consumption.
+
 During compilation, the assembler collects additional mappings that can be used to convert the TVM log into a full trace
 that will refer to specific instructions in the decompiled version of the contract.
 
