@@ -1,4 +1,4 @@
-import * as $ from "./grammar.pegjs.js"
+import * as $ from "./grammar.gen.pegjs"
 import * as G from "./grammar"
 import type {Stack, StackElement} from "./stack"
 import VmParsedStack = G.$ast.VmParsedStack

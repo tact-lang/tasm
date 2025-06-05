@@ -1,5 +1,5 @@
 import {parse} from "../parse"
-import * as $ from "../grammar.pegjs.js"
+import * as $ from "../grammar.gen.pegjs"
 import type * as G from "../grammar"
 
 describe("Grammar Rules Compliance", () => {
