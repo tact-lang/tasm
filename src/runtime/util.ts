@@ -420,6 +420,15 @@ export const debugstr: Type<Slice> = {
     },
     store(b, slice) {
         const length = slice.remainingBits
+        if (length < 8) {
+            throw new Error(
+                `DEBUGSTR slice should be larger that 8 bits, but ${length}-bit slice given`,
+            )
+        }
+        if (length % 8 !== 0) {
+            throw new Error(`DEBUGSTR slice should be byte aligned, but ${length}-bit slice given`)
+        }
+
         const y = Math.ceil((length - 8) / 8)
         b.storeUint(y, 4)
         b.storeSlice(slice)

@@ -22,7 +22,7 @@ import {
     SUB,
 } from "../index"
 import {call, execute} from "../../helpers"
-import {code, dictMap, hex} from "../util"
+import {bin, code, dictMap, hex} from "../util"
 import {print} from "../../text"
 
 const someFunction = (): Instr[] => [MUL(), ADD()]
@@ -33,6 +33,12 @@ const test = (instructions: Instr[], expected: string): (() => void) => {
         const disasn = decompileCell(compiled)
         const disasnRes = print(disasn)
         expect(disasnRes).toEqual(expected)
+    }
+}
+
+const testFail = (instructions: Instr[], expected: string): (() => void) => {
+    return () => {
+        expect(() => compileCell(instructions)).toThrow(expected)
     }
 }
 
@@ -319,6 +325,28 @@ STREF2CONST {
 }
 ENDC
 `,
+        ),
+    )
+    it(
+        "with short DEBUGSTR",
+        testFail(
+            [DEBUGSTR(bin("00001"))],
+            `DEBUGSTR slice should be larger that 8 bits, but 5-bit slice given`,
+        ),
+    )
+    it(
+        "with 8-bit DEBUGSTR",
+        test(
+            [DEBUGSTR(bin("00000001"))],
+            `DEBUGSTR x{01}
+`,
+        ),
+    )
+    it(
+        "with 9-bit DEBUGSTR",
+        testFail(
+            [DEBUGSTR(bin("000000001"))],
+            `DEBUGSTR slice should be byte aligned, but 9-bit slice given`,
         ),
     )
 })
