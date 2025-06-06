@@ -112,22 +112,17 @@ export function printCode(p: Printer, arg0: Code) {
     }
 
     if (arg0.$ === "Raw") {
-        const value = arg0.slice.asCell().toString().slice(2, -1)
-        if (value.includes("\n")) {
-            // cell with refs
-            p.append(`boc{${arg0.slice.asCell().toBoc().toString("hex")}}`)
-        } else {
-            p.append(`x{${value}}`)
-        }
+        printSlice(p, arg0.slice)
     }
 }
 
 export function printSlice(p: Printer, slice: Slice) {
-    const value = slice.asCell().toString().slice(2, -1)
-    if (value.includes("\n")) {
-        // cell with refs
-        p.append(`boc{${slice.asCell().toBoc().toString("hex")}}`)
+    const hasRefs = slice.remainingRefs
+    if (hasRefs) {
+        const data = slice.asCell().toBoc().toString("hex")
+        p.append(`boc{${data}}`)
     } else {
-        p.append(`x{${value}}`)
+        const data = slice.asCell().bits.toString()
+        p.append(`x{${data}}`)
     }
 }

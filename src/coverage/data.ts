@@ -209,7 +209,7 @@ export const generateCoverageSummary = (lines: readonly Line[]): CoverageSummary
             name,
             totalGas: stats.totalGas,
             totalHits: stats.hits,
-            avgGas: Math.round((stats.totalGas / stats.hits) * 100) / 100,
+            avgGas: stats.hits === 0 ? 0 : Math.round((stats.totalGas / stats.hits) * 100) / 100,
         }))
         .sort((a, b) => b.totalGas - a.totalGas)
 

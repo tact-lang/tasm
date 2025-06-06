@@ -3,6 +3,9 @@ import type {Address, Contract, ContractProvider, Sender, StateInit, TupleReader
 import {Cell, contractAddress, toNano, TupleBuilder} from "@ton/core"
 import type {SandboxContract, TreasuryContract} from "@ton/sandbox"
 import {Blockchain} from "@ton/sandbox"
+import type {ContractGetMethodResult} from "@ton/core/dist/contract/ContractProvider"
+
+export type ExtendedGetResult = ContractGetMethodResult & {vmLogs: string}
 
 export const executeInstructions = async (
     code: i.Instr[],
@@ -31,9 +34,7 @@ export const executeInstructions = async (
             id: number,
         ): Promise<[TupleReader, string]> {
             const builder = new TupleBuilder()
-            const res = await provider.get(id, builder.build())
-
-            // @ts-expect-error TS2551
+            const res = (await provider.get(id, builder.build())) as ExtendedGetResult
             return [res.stack, res.vmLogs]
         }
     }
