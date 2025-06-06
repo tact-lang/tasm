@@ -60,9 +60,26 @@ const safeStore = (b: CodeBuilder, t: Instr): boolean => {
         if (b.bits >= 1023) {
             return true
         }
-    } catch (error: unknown) {
-        if (error instanceof Error && error.message === "BitBuilder overflow") {
+
+        if (b.refs >= 4) {
+            if (t.$ === "PSEUDO_PUSHREF" && b.refs === 4) {
+                // In the case where the compiler itself has set the necessary `ref {}`,
+                // we do not try to predict in advance whether there may be an overflow further,
+                // since the compiler has already decomposed everything into correct refs
+                return false
+            }
+            // In case of other instructions that push references, we cannot be sure, s
+            // o we handle this case explicitly.
             return true
+        }
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            if (
+                error.message === "BitBuilder overflow" ||
+                error.message === "Too many references"
+            ) {
+                return true
+            }
         }
 
         throw error

@@ -188,4 +188,31 @@ describe("tests auto layout", () => {
             `,
         ),
     )
+    it(
+        "Too much references",
+        test(
+            `
+                PUSHREF {}
+                PUSHREF {}
+                PUSHREF {}
+                PUSHREF {}
+                PUSHREF {}
+                PUSHREF {}
+                PUSHREF {}
+            `,
+            `
+                PUSHREF {}
+                PUSHREF {}
+                PUSHREF {}
+                ref {
+                    PUSHREF {}
+                    PUSHREF {}
+                    PUSHREF {}
+                    ref {
+                        PUSHREF {}
+                    }
+                }
+            `,
+        ),
+    )
 })
