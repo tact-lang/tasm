@@ -67,6 +67,19 @@ This module handles the conversion between the AST representation (`Instr[]`) an
     const bocBuffer = runtime.compile(instructions)
     ```
 
+- **`compileCellWithMapping(instructions: Instr[]): [Cell, Mapping]`**
+
+    Compiles an array of `Instr` objects into a `Cell` along with mapping information for debugging and tracing.
+
+    **Returns:** A tuple containing the compiled `Cell` and `Mapping` information that links cell offsets to source
+    locations.
+
+    **Example:**
+
+    ```typescript
+    const [cell, mapping] = runtime.compileCellWithMapping(instructions)
+    ```
+
 - **`decompileCell(cell: Cell): Instr[]`**
 
     Decompiles a TVM `Cell` into an array of `Instr` objects.
@@ -135,13 +148,28 @@ extremely useful for debugging smart contracts.
 This module connects the parsed logs with the source code, enabling step-by-step debugging. It uses the `MappingInfo`
 generated during compilation to link each executed instruction back to its original location in the `.tasm` file.
 
+- **`createMappingInfo(mapping: Mapping): MappingInfo`**
+
+    Creates mapping information from the compilation mapping data.
+
+    - `mapping`: The `Mapping` object obtained from `compileCellWithMapping` function.
+    - **Returns:** A `MappingInfo` object that can be used for tracing.
+
+    **Example:**
+
+    ```typescript
+    import {runtime, trace} from "ton-assembly"
+
+    const [cell, mapping] = runtime.compileCellWithMapping(instructions)
+    const mappingInfo = trace.createMappingInfo(mapping)
+    ```
+
 - **`createTraceInfo(logs: string, mapping: MappingInfo, funcMapping?: FuncMapping): TraceInfo`**
 
     Creates a detailed execution trace.
 
     - `logs`: The raw execution log string.
-    - `mapping`: The `MappingInfo` object obtained from the `compileCellWithMapping` function in the `runtime` module.
-      This map links cell hashes and instruction offsets to source code locations.
+    - `mapping`: The `MappingInfo` object obtained from the `createMappingInfo` function.
     - `funcMapping`: (Optional) Mapping information for FunC functions, if applicable.
     - **Returns:** A `TraceInfo` object containing an array of `Step` objects. Each `Step` includes the source
       location (`loc`), instruction name, stack state, and gas information.
@@ -153,12 +181,13 @@ generated during compilation to link each executed instruction back to its origi
 
     // 1. Compile with mapping enabled
     const [cell, mapping] = runtime.compileCellWithMapping(instructions)
+    const mappingInfo = trace.createMappingInfo(mapping)
 
     // 2. Get execution logs (from sandbox or other emulator)
     const logs = getExecutionLogs()
 
     // 3. Create the trace
-    const traceInfo = trace.createTraceInfo(logs, mapping)
+    const traceInfo = trace.createTraceInfo(logs, mappingInfo)
 
     // 4. Analyze the trace
     for (const step of traceInfo.steps) {
@@ -166,4 +195,28 @@ generated during compilation to link each executed instruction back to its origi
             console.log(`[${step.loc.file}:${step.loc.line}:${step.loc.col}]`, step.instructionName)
         }
     }
+    ```
+
+- **`createTraceInfoPerTransaction(logs: string, mapping: MappingInfo, funcMapping?: FuncMapping): TraceInfo[]`**
+
+    Creates detailed execution traces per transaction.
+
+    - `logs`: The raw execution log string containing multiple transactions.
+    - `mapping`: The `MappingInfo` object.
+    - `funcMapping`: (Optional) Mapping information for FunC functions.
+    - **Returns:** An array of `TraceInfo` objects, one for each transaction found in the logs.
+
+    **Example:**
+
+    ```typescript
+    import {trace} from "ton-assembly"
+
+    const traceInfos = trace.createTraceInfoPerTransaction(logs, mappingInfo)
+
+    traceInfos.forEach((transaction, i) => {
+        console.log(`Transaction ${i}:`)
+        transaction.steps.forEach(step => {
+            console.log(`  - ${step.instructionName} (gas: ${step.gasCost})`)
+        })
+    })
     ```
