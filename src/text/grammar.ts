@@ -103,15 +103,15 @@ export namespace $ast {
     }>
     export type IntegerLiteralHex = $.Located<{
         readonly $: "IntegerLiteralHex"
-        readonly digits: underscored<hexDigit>
+        readonly digits: string
     }>
     export type IntegerLiteralBin = $.Located<{
         readonly $: "IntegerLiteralBin"
-        readonly digits: underscored<binDigit>
+        readonly digits: string
     }>
     export type IntegerLiteralOct = $.Located<{
         readonly $: "IntegerLiteralOct"
-        readonly digits: underscored<string>
+        readonly digits: string
     }>
     export type underscored<T> = string
     export type hexDigit = string | string | string
@@ -449,11 +449,13 @@ export const IntegerLiteralHex: $.Parser<$ast.IntegerLiteralHex> = $.loc(
         "$",
         $.field(
             $.lex(
-                $.right(
-                    $.str("0"),
+                $.stry(
                     $.right(
-                        $.regex<"x" | "X">("xX", [$.ExpString("x"), $.ExpString("X")]),
-                        $.lazy(() => underscored($.lazy(() => hexDigit))),
+                        $.str("0"),
+                        $.right(
+                            $.regex<"x" | "X">("xX", [$.ExpString("x"), $.ExpString("X")]),
+                            $.lazy(() => underscored($.lazy(() => hexDigit))),
+                        ),
                     ),
                 ),
             ),
@@ -468,11 +470,13 @@ export const IntegerLiteralBin: $.Parser<$ast.IntegerLiteralBin> = $.loc(
         "$",
         $.field(
             $.lex(
-                $.right(
-                    $.str("0"),
+                $.stry(
                     $.right(
-                        $.regex<"b" | "B">("bB", [$.ExpString("b"), $.ExpString("B")]),
-                        $.lazy(() => underscored($.lazy(() => binDigit))),
+                        $.str("0"),
+                        $.right(
+                            $.regex<"b" | "B">("bB", [$.ExpString("b"), $.ExpString("B")]),
+                            $.lazy(() => underscored($.lazy(() => binDigit))),
+                        ),
                     ),
                 ),
             ),
@@ -487,11 +491,15 @@ export const IntegerLiteralOct: $.Parser<$ast.IntegerLiteralOct> = $.loc(
         "$",
         $.field(
             $.lex(
-                $.right(
-                    $.str("0"),
+                $.stry(
                     $.right(
-                        $.regex<"o" | "O">("oO", [$.ExpString("o"), $.ExpString("O")]),
-                        $.lazy(() => underscored($.regex<string>("0-7", [$.ExpRange("0", "7")]))),
+                        $.str("0"),
+                        $.right(
+                            $.regex<"o" | "O">("oO", [$.ExpString("o"), $.ExpString("O")]),
+                            $.lazy(() =>
+                                underscored($.regex<string>("0-7", [$.ExpRange("0", "7")])),
+                            ),
+                        ),
                     ),
                 ),
             ),

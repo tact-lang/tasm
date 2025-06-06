@@ -42,9 +42,9 @@ BocLiteral = "boc{" content:$(hexDigit*) "}";
 IntegerLiteral = op:"-"? value:(IntegerLiteralHex / IntegerLiteralBin / IntegerLiteralOct / IntegerLiteralDec);
 
 IntegerLiteralDec = digits:#underscored<digit>;
-IntegerLiteralHex = digits:#("0" [xX] @underscored<hexDigit>);
-IntegerLiteralBin = digits:#("0" [bB] @underscored<binDigit>);
-IntegerLiteralOct = digits:#("0" [oO] @underscored<[0-7]>);
+IntegerLiteralHex = digits:#$("0" [xX] @underscored<hexDigit>);
+IntegerLiteralBin = digits:#$("0" [bB] @underscored<binDigit>);
+IntegerLiteralOct = digits:#$("0" [oO] @underscored<[0-7]>);
 
 underscored<T> = $(T ("_"? T)*);
 

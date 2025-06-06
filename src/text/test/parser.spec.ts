@@ -90,4 +90,130 @@ describe("assembly-parser", () => {
 
         expect(res.error.toString()).toMatchSnapshot()
     })
+
+    it("should parse big hex number", () => {
+        const code = `
+            PUSHINT_LONG 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            PUSHINT_LONG -0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse big decimal number", () => {
+        const code = `
+            PUSHINT_LONG 999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+            PUSHINT_LONG -999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse big binary number", () => {
+        const code = `
+            PUSHINT_LONG 0b111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            PUSHINT_LONG -0b111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse big octal number", () => {
+        const code = `
+            PUSHINT_LONG 0o7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            PUSHINT_LONG -0o7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse hex number", () => {
+        const code = `
+            PUSHINT_16 0xFFF
+            PUSHINT_16 -0xFFF
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse decimal number", () => {
+        const code = `
+            PUSHINT_16 999999
+            PUSHINT_16 -999999
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse binary number", () => {
+        const code = `
+            PUSHINT_16 0b1111111111
+            PUSHINT_16 -0b1111111111
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse octal number", () => {
+        const code = `
+            PUSHINT_16 0o77777
+            PUSHINT_16 -0o77777
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should give an error for too big number ", () => {
+        const code = `
+            PUSHINT_4 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+            PUSHINT_4 5
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseSuccess") {
+            throw new Error("unexpected parser success")
+        }
+
+        expect(res.error.toString()).toMatchSnapshot()
+    })
 })

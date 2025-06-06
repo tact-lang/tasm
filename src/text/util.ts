@@ -97,6 +97,9 @@ export const processInstructions = (ctx: Ctx, instructions: $ast.instructions): 
             if (typeof error === "string") {
                 throw new ParseError(loc, error)
             }
+            if (error instanceof Error) {
+                throw new ParseError(loc, error.message)
+            }
 
             throw error
         }
@@ -161,11 +164,7 @@ export const singleBigIntArg = (instr: $ast.Instruction) => {
         throw new Error(`Expected integer literal argument, got ${arg.$}`)
     }
 
-    const value = BigInt(arg.value.digits)
-    if (arg.op === "-") {
-        return -value
-    }
-    return value
+    return parseBigNum(arg)
 }
 
 export const twoIntegerArgs = (instr: $ast.Instruction): [number, number] => {
@@ -444,7 +443,30 @@ const parseDataLiteral = (literal: $ast.DataLiteral): Slice => {
 const parseStackElement = (arg: $ast.StackElement) => Number.parseInt(arg.value.slice(1))
 
 const parseNumber = (literal: $ast.IntegerLiteral) => {
+    const bigNum = parseBigNum(literal)
+    if (bigNum > Number.MAX_SAFE_INTEGER) {
+        throw new Error(
+            `Number argument is too big, max value is ${Number.MAX_SAFE_INTEGER}, but ${bigNum} given`,
+        )
+    }
+
+    if (literal.value.$ === "IntegerLiteralOct") {
+        // special handle for 0o777
+        const val = Number.parseInt(literal.value.digits.slice(2), 8)
+        if (literal.op === "-") {
+            return -val
+        }
+        return val
+    }
     const val = Number.parseInt(literal.value.digits)
+    if (literal.op === "-") {
+        return -val
+    }
+    return val
+}
+
+const parseBigNum = (literal: $ast.IntegerLiteral) => {
+    const val = BigInt(literal.value.digits)
     if (literal.op === "-") {
         return -val
     }
