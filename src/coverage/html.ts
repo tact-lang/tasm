@@ -57,7 +57,7 @@ const generateLineHtml = (
         const totalGasCost = calculateTotalGas(gasInfo)
 
         const gasPercentage = Math.sqrt(totalGasCost / maxGasPerLine) * 100
-        const totalGasPercentage = (totalGasCost / totalGas) * 100
+        const totalGasPercentage = totalGas === 0 ? 0 : (totalGasCost / totalGas) * 100
 
         gasPercentStyle = ` style="--gas-percent:${gasPercentage.toFixed(4)}%" data-gas-percent="${totalGasPercentage.toFixed(2)}%"`
 
