@@ -84,6 +84,13 @@ tdisasm -s "te6cckEBAgEAJwABFP8AjoP0pBPtQ9kBAC+mTOc7UTQ0gDTH9If0//0BFVAbBUhbFGDs
 
 See [CLI documentation](./src/cli/README.md) for detailed usage instructions.
 
+## Library Usage
+
+In addition to the CLI tools, this package can be used as a library for programmatic compilation, decompilation, and log
+tracing.
+
+For detailed information, see the [**API Documentation**](API.md).
+
 ## Validity
 
 The assembler was tested on 106k contracts from the blockchain
