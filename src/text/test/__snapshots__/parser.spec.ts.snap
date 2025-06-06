@@ -49,13 +49,27 @@ ADD
 `;
 
 exports[`assembly-parser should parse binary number 1`] = `
-"PUSHINT_16 0
-PUSHINT_16 0
+"PUSHINT_16 1023
+PUSHINT_16 -1023
+ADD
+"
+`;
+
+exports[`assembly-parser should parse binary number with _ 1`] = `
+"PUSHINT_16 1023
+PUSHINT_16 -1023
 ADD
 "
 `;
 
 exports[`assembly-parser should parse decimal number 1`] = `
+"PUSHINT_16 999999
+PUSHINT_16 -999999
+ADD
+"
+`;
+
+exports[`assembly-parser should parse decimal number with _ 1`] = `
 "PUSHINT_16 999999
 PUSHINT_16 -999999
 ADD
@@ -69,7 +83,21 @@ ADD
 "
 `;
 
+exports[`assembly-parser should parse hex number with _ 1`] = `
+"PUSHINT_16 4095
+PUSHINT_16 -4095
+ADD
+"
+`;
+
 exports[`assembly-parser should parse octal number 1`] = `
+"PUSHINT_16 32767
+PUSHINT_16 -32767
+ADD
+"
+`;
+
+exports[`assembly-parser should parse octal number with _ 1`] = `
 "PUSHINT_16 32767
 PUSHINT_16 -32767
 ADD

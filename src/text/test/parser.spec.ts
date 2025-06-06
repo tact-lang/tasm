@@ -216,4 +216,60 @@ describe("assembly-parser", () => {
 
         expect(res.error.toString()).toMatchSnapshot()
     })
+
+    it("should parse hex number with _", () => {
+        const code = `
+            PUSHINT_16 0xF_FF
+            PUSHINT_16 -0xF_F_F
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error(`unexpected parser error ${res.error.message}`)
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse decimal number with _", () => {
+        const code = `
+            PUSHINT_16 999_999
+            PUSHINT_16 -99_99_99
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse binary number with _", () => {
+        const code = `
+            PUSHINT_16 0b11111_11111
+            PUSHINT_16 -0b111_11_11_1_11
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
+
+    it("should parse octal number with _", () => {
+        const code = `
+            PUSHINT_16 0o777_77
+            PUSHINT_16 -0o7_77_77
+            ADD
+        `
+        const res = parse("test.asm", code)
+        if (res.$ === "ParseFailure") {
+            throw new Error("unexpected parser error")
+        }
+
+        expect(print(res.instructions)).toMatchSnapshot()
+    })
 })

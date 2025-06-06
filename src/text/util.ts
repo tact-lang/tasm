@@ -452,13 +452,21 @@ const parseNumber = (literal: $ast.IntegerLiteral) => {
 
     if (literal.value.$ === "IntegerLiteralOct") {
         // special handle for 0o777
-        const val = Number.parseInt(literal.value.digits.slice(2), 8)
+        const val = Number.parseInt(normalizeUnderscores(literal.value.digits.slice(2)), 8)
         if (literal.op === "-") {
             return -val
         }
         return val
     }
-    const val = Number.parseInt(literal.value.digits)
+    if (literal.value.$ === "IntegerLiteralBin") {
+        // special handle for 0b1111
+        const val = Number.parseInt(normalizeUnderscores(literal.value.digits.slice(2)), 2)
+        if (literal.op === "-") {
+            return -val
+        }
+        return val
+    }
+    const val = Number.parseInt(normalizeUnderscores(literal.value.digits))
     if (literal.op === "-") {
         return -val
     }
@@ -466,12 +474,14 @@ const parseNumber = (literal: $ast.IntegerLiteral) => {
 }
 
 const parseBigNum = (literal: $ast.IntegerLiteral) => {
-    const val = BigInt(literal.value.digits)
+    const val = BigInt(normalizeUnderscores(literal.value.digits))
     if (literal.op === "-") {
         return -val
     }
     return val
 }
+
+const normalizeUnderscores = (input: string): string => input.replaceAll("_", "")
 
 const processRawSliceCode = (literal: $ast.DataLiteral): Code => {
     const slice = parseDataLiteral(literal)
