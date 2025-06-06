@@ -1,6 +1,5 @@
 export {Cell, Slice, Builder} from "@ton/core"
 export type {Dictionary, DictionaryKeyTypes, DictionaryValue} from "./dict/Dictionary"
-export * as helpers from "./helpers"
 export * as logs from "./logs"
 export * as runtime from "./runtime"
 export * as text from "./text"
