@@ -90,7 +90,7 @@
     ],
     "packageManager": "yarn@4.6.0",
     "bin": {
-        "disasm": "./dist/cli/disassembler.js",
-        "tasm": "./dist/cli/assembler.js"
+        "tasm": "./dist/cli/assembler.js",
+        "tdisasm": "./dist/cli/disassembler.js"
     }
 }

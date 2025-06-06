@@ -1,6 +1,6 @@
 # TON Assembly CLI Tools
 
-This package contains two CLI utilities for working with TON Assembly:
+This package contains CLI utilities for working with TON Assembly:
 
 ## 📦 Assembler (tasm)
 
@@ -43,7 +43,7 @@ tasm contract.tasm --verbose
 tasm contract.tasm -f hex
 ```
 
-## 🔍 Disassembler (disasm)
+## 🔍 Disassembler (tdisasm)
 
 Disassembles binary BOC files back to TVM Assembly text format.
 
@@ -57,13 +57,14 @@ yarn disassembler contract.boc
 ts-node src/cli/disassembler.ts contract.boc
 
 # Via npm binary (when installed globally)
-disasm contract.boc
+tdisasm contract.boc
 ```
 
 ### Options
 
 - `-o, --output <file>` - Output file path
 - `-f, --format <format>` - Input format: `binary` (default), `hex`, `base64`
+- `-s, --string <data>` - Input data as hex or base64 string instead of file
 - `--verbose` - Verbose output
 - `-h, --help` - Show help
 - `-v, --version` - Show version
@@ -72,16 +73,25 @@ disasm contract.boc
 
 ```bash
 # Disassemble binary BOC file
-disasm contract.boc -o contract.tasm
+tdisasm contract.boc -o contract.tasm
 
 # Disassemble hex file
-disasm contract.hex -f hex -o contract.tasm
+tdisasm contract.hex -f hex -o contract.tasm
 
 # Disassemble with verbose output
-disasm contract.boc --verbose
+tdisasm contract.boc --verbose
 
 # Output to stdout
-disasm contract.boc
+tdisasm contract.boc
+
+# Disassemble from hex string directly
+tdisasm -s "b5ee9c72410102010027000114ff008e83f4a413ed43d901002fa64ce73b5134348034c7f487f4fffd0115501b05485b1460ec17065c" -f hex -o contract.tasm
+
+# Disassemble from base64 string directly
+tdisasm -s "te6cckEBAgEAJwABFP8AjoP0pBPtQ9kBAC+mTOc7UTQ0gDTH9If0//0BFVAbBUhbFGDsFwZc" -f base64
+
+# Disassemble from hex string to stdout
+tdisasm -s "b5ee9c72410102010027000114ff008e83f4a413ed43d901002fa64ce73b5134348034c7f487f4fffd0115501b05485b1460ec17065c" -f hex
 ```
 
 ## 🔄 Full Conversion Cycle
@@ -94,7 +104,7 @@ The library supports complete conversion cycle:
 tasm source.tasm -o compiled.boc
 
 # Disassemble
-disasm compiled.boc -o decompiled.tasm
+tdisasm compiled.boc -o decompiled.tasm
 
 # Re-assemble
 tasm decompiled.tasm -o recompiled.boc
@@ -113,8 +123,8 @@ tasm decompiled.tasm -o recompiled.boc
 **Disassembler:**
 
 - `binary` - Binary BOC files (default)
-- `hex` - BOC in hex encoding (text file)
-- `base64` - BOC in base64 encoding (text file)
+- `hex` - BOC in hex encoding (text file or string input)
+- `base64` - BOC in base64 encoding (text file or string input)
 
 ### Output Formats
 

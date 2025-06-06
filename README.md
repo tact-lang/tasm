@@ -52,7 +52,7 @@ Disassemble BOC files back to TVM Assembly:
 
 ```bash
 # Use the disassembler
-disasm contract.boc -o contract.tasm
+tdisasm contract.boc -o contract.tasm
 
 # Or via yarn scripts
 yarn disassembler contract.boc -o contract.tasm
@@ -67,7 +67,7 @@ Both tools support multiple output formats (binary, hex, base64) and provide ver
 tasm contract.tasm -o contract.boc --verbose
 
 # Disassemble BOC back to assembly
-disasm contract.boc -o decompiled.tasm --verbose
+tdisasm contract.boc -o decompiled.tasm --verbose
 
 # Full round-trip test
 tasm decompiled.tasm -o recompiled.boc
@@ -75,7 +75,11 @@ tasm decompiled.tasm -o recompiled.boc
 
 # Work with different formats
 tasm contract.tasm -f hex > contract.hex
-disasm contract.hex -f hex -o contract.tasm
+tdisasm contract.hex -f hex -o contract.tasm
+
+# Disassemble from hex/base64 strings directly
+tdisasm -s "b5ee9c72410102010027000114ff008e83f4a413ed43d901002fa64ce73b5134348034c7f487f4fffd0115501b05485b1460ec17065c" -f hex -o contract.tasm
+tdisasm -s "te6cckEBAgEAJwABFP8AjoP0pBPtQ9kBAC+mTOc7UTQ0gDTH9If0//0BFVAbBUhbFGDsFwZc" -f base64
 ```
 
 See [CLI documentation](./src/cli/README.md) for detailed usage instructions.
