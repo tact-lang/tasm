@@ -11,7 +11,7 @@ The library allows for a full assembly/disassembly cycle:
 The main functionality is exported through several modules.
 
 ```typescript
-import {text, runtime} from "ton-assembly"
+import {text, runtime, logs, trace} from "ton-assembly"
 ```
 
 ## `text` Module: Parsing and Printing
