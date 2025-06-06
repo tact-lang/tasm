@@ -400,18 +400,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint-community/eslint-utils@npm:^4.2.0":
-  version: 4.6.1
-  resolution: "@eslint-community/eslint-utils@npm:4.6.1"
-  dependencies:
-    eslint-visitor-keys: "npm:^3.4.3"
-  peerDependencies:
-    eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
-  checksum: 10c0/cdeb6f8fc33a83726357d7f736075cdbd6e79dc7ac4b00b15680f1111d0f33bda583e7fafa5937245a058cc66302dc47568bba57b251302dc74964d8e87f56d7
-  languageName: node
-  linkType: hard
-
-"@eslint-community/eslint-utils@npm:^4.5.1, @eslint-community/eslint-utils@npm:^4.7.0":
+"@eslint-community/eslint-utils@npm:^4.2.0, @eslint-community/eslint-utils@npm:^4.5.1, @eslint-community/eslint-utils@npm:^4.7.0":
   version: 4.7.0
   resolution: "@eslint-community/eslint-utils@npm:4.7.0"
   dependencies:
@@ -1210,16 +1199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
-  version: 22.13.17
-  resolution: "@types/node@npm:22.13.17"
-  dependencies:
-    undici-types: "npm:~6.20.0"
-  checksum: 10c0/77a052fec0fe02f60557e1c5f3f28eb09cd9bee426be88328a94689150a3c0df5b4b6b69fad28157fb34521693dad0b311ecd7f613845d681ff973991310c20e
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^22.15.30":
+"@types/node@npm:*, @types/node@npm:^22.15.30":
   version: 22.15.30
   resolution: "@types/node@npm:22.15.30"
   dependencies:
@@ -4329,7 +4309,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.7.1, semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.7.1":
+"semver@npm:7.7.1":
   version: 7.7.1
   resolution: "semver@npm:7.7.1"
   bin:
@@ -4347,7 +4327,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.7.2":
+"semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.7.1, semver@npm:^7.7.2":
   version: 7.7.2
   resolution: "semver@npm:7.7.2"
   bin:
@@ -4872,13 +4852,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/39117e346ff8ebd87ae1510b3a77d5d92dae5a89bde588c747d25da5c146603a99c8ee588c7ef80faaf123d89ed46f6dbd918d534d641083177d5fac38b8a1cb
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~6.20.0":
-  version: 6.20.0
-  resolution: "undici-types@npm:6.20.0"
-  checksum: 10c0/68e659a98898d6a836a9a59e6adf14a5d799707f5ea629433e025ac90d239f75e408e2e5ff086afc3cace26f8b26ee52155293564593fbb4a2f666af57fc59bf
   languageName: node
   linkType: hard
 
