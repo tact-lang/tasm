@@ -179,7 +179,7 @@ export const generateCoverageSummary = (lines: readonly Line[]): CoverageSummary
         line => isExecutableLine(line.line) && line.info.$ === "Covered",
     ).length
     const uncoveredLines = totalExecutableLines - coveredLines
-    const coveragePercentage = (coveredLines / totalExecutableLines) * 100
+    const coveragePercentage = totalExecutableLines === 0 ? 0 : (coveredLines / totalExecutableLines) * 100
 
     let totalGas = 0
     let totalHits = 0

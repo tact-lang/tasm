@@ -132,6 +132,10 @@ export class CodeBuilder extends Builder {
         // @ts-expect-error hack
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this._refs = other._refs
+        this.instructions.push(...other.instructions)
+        this.subMappings.push(...other.subMappings)
+        this.dictionaryInfo.push(...other.dictionaryInfo)
+        this.debugSectionId = other.debugSectionId
         return this
     }
 }
