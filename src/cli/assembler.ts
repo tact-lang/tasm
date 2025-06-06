@@ -63,7 +63,7 @@ cli.command("[file]", "Assemble a TASM file to BOC")
             } else {
                 switch (options.format) {
                     case "binary":
-                        console.log(boc.toString("hex"))
+                        process.stdout.write(boc)
                         break
                     case "base64":
                         console.log(boc.toString("base64"))
