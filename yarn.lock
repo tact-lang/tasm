@@ -4954,8 +4954,8 @@ __metadata:
   peerDependencies:
     "@ton/core": ">=0.60.1"
   bin:
-    disasm: ./dist/cli/disassembler.js
     tasm: ./dist/cli/assembler.js
+    tdisasm: ./dist/cli/disassembler.js
   languageName: unknown
   linkType: soft
 
