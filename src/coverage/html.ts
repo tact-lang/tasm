@@ -1,4 +1,4 @@
-import type {CoverageSummary, Line} from "./data";
+import type {Coverage, CoverageSummary, Line} from "./data"
 import { generateCoverageSummary} from "./data"
 import {MAIN_TEMPLATE, SUMMARY_TEMPLATE} from "./templates/templates"
 
@@ -98,9 +98,10 @@ const generateInstructionRowsHtml = (summary: CoverageSummary): string => {
         .join("\n")
 }
 
-export const generateHtml = (lines: readonly Line[]): string => {
-    const summary = generateCoverageSummary(lines)
+export const generateHtml = (coverage: Coverage): string => {
+    const summary = generateCoverageSummary(coverage)
 
+    const lines = coverage.lines;
     const maxGas = Math.max(
         ...lines.map(line =>
             line.info.$ === "Covered" ? line.info.gasCosts.reduce((sum, gas) => sum + gas, 0) : 0,

@@ -2,9 +2,8 @@ import type {Cell} from "@ton/core"
 import type { Mapping} from "../runtime";
 import {compileCellWithMapping, decompileCell} from "../runtime"
 import {print, parse} from "../text"
-import {createMappingInfo, createTraceInfoPerTransaction, loadFuncMapping} from "../trace"
-import {buildFuncLineInfo, buildLineInfo, generateCoverageSummary} from "./data"
-import {readFileSync} from "node:fs"
+import {createMappingInfo, createTraceInfoPerTransaction} from "../trace"
+import {buildLineInfo} from "./data"
 
 export function collectAsmCoverage(cell: Cell, logs: string) {
     const [cleanCell, mapping] = recompileCell(cell, false)
@@ -14,25 +13,10 @@ export function collectAsmCoverage(cell: Cell, logs: string) {
     const assembly = print(decompileCell(cleanCell))
     const combinedTrace = {steps: traceInfos.flatMap(trace => trace.steps)}
     const combinedLines = buildLineInfo(combinedTrace, assembly)
-    const combinedSummary = generateCoverageSummary(combinedLines)
-    return {lines: combinedLines, summary: combinedSummary}
-}
-
-export function collectFuncCoverage(
-    cell: Cell,
-    logs: string,
-    funcSources: string,
-    funcMappingPath: string,
-) {
-    const [_, mapping] = recompileCell(cell, true)
-    const info = createMappingInfo(mapping)
-
-    const funcMapping = loadFuncMapping(readFileSync(funcMappingPath, "utf8"))
-    const traceInfos = createTraceInfoPerTransaction(logs, info, funcMapping)
-    const func = readFileSync(funcSources, "utf8")
-    const combinedLines = buildFuncLineInfo(traceInfos, func)
-    const combinedSummary = generateCoverageSummary(combinedLines)
-    return {lines: combinedLines, summary: combinedSummary}
+    return {
+        code: cell,
+        lines: combinedLines,
+    };
 }
 
 export const recompileCell = (cell: Cell, forFunC: boolean): [Cell, Mapping] => {

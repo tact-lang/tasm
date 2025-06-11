@@ -1,7 +1,11 @@
-import type {CoverageSummary, InstructionStat, Line} from "./data"
+import type {Coverage, CoverageSummary, InstructionStat, Line} from "./data"
 import {calculateTotalGas} from "./html"
 
-export const generateTextReport = (lines: readonly Line[], summary: CoverageSummary): string => {
+export const generateTextReport = (
+    coverage: Coverage,
+    summary: CoverageSummary,
+): string => {
+    const lines = coverage.lines;
     const maxLineNumberWidth = lines.length.toString().length
 
     const annotatedLines = lines

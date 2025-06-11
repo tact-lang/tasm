@@ -1,5 +1,5 @@
 {
-    "name": "@tact-lang/ton-assembly",
+    "name": "ton-assembly-dev-test",
     "version": "0.0.1",
     "description": "TON assembler and disassembler",
     "keywords": [
@@ -11,6 +11,11 @@
         "blockchain",
         "smart-contracts"
     ],
+    "main": "dist/index.js",
+    "bin": {
+        "tasm": "./dist/cli/assembler.js",
+        "tdisasm": "./dist/cli/disassembler.js"
+    },
     "scripts": {
         "build": "tsc --declaration",
         "lint": "eslint --cache .",
@@ -88,8 +93,8 @@
         "!*.js.map"
     ],
     "packageManager": "yarn@4.6.0",
-    "bin": {
-        "tasm": "./dist/cli/assembler.js",
-        "tdisasm": "./dist/cli/disassembler.js"
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
     }
 }

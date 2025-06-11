@@ -1,7 +1,7 @@
 import {compileCell} from "../../runtime"
-import {parse} from "../../text/parse"
-import {executeInstructions} from "../../helpers/execute"
-import {collectAsmCoverage} from "../index"
+import {parse} from "../../text"
+import {executeInstructions} from "../../helpers"
+import {collectAsmCoverage, generateCoverageSummary} from "../index"
 import {generateTextReport} from "../text"
 import {generateHtml} from "../html"
 import {mkdirSync, writeFileSync, existsSync} from "node:fs"
@@ -10,26 +10,27 @@ describe("asm coverage", () => {
     const test =
         (name: string, code: string, id: number = 0) =>
         async () => {
-            const res = parse("test.asm", code)
+            const res = parse("test.asm", code);
             if (res.$ === "ParseFailure") {
-                throw new Error(res.error.msg)
+                throw new Error(res.error.msg);
             }
 
-            const cell = compileCell(res.instructions)
-            const [_, logs] = await executeInstructions(res.instructions, id)
-            const {lines, summary} = collectAsmCoverage(cell, logs)
+            const cell = compileCell(res.instructions);
+            const [_, logs] = await executeInstructions(res.instructions, id);
+            const coverage = collectAsmCoverage(cell, logs);
 
-            const report = generateTextReport(lines, summary)
-            expect(report).toMatchSnapshot()
+            const summary = generateCoverageSummary(coverage);
+            const report = generateTextReport(coverage, summary);
+            expect(report).toMatchSnapshot();
 
-            const outDirname = `${__dirname}/output`
+            const outDirname = `${__dirname}/output`;
             if (!existsSync(outDirname)) {
-                mkdirSync(outDirname)
+                mkdirSync(outDirname);
             }
 
-            const htmlReport = generateHtml(lines)
-            writeFileSync(`${__dirname}/output/${name}.html`, htmlReport)
-        }
+            const htmlReport = generateHtml(coverage);
+            writeFileSync(`${__dirname}/output/${name}.html`, htmlReport);
+        };
 
     it(
         "simple if",
@@ -46,7 +47,7 @@ describe("asm coverage", () => {
                 IF
             `,
         ),
-    )
+    );
 
     it(
         "if ret",
@@ -63,7 +64,7 @@ describe("asm coverage", () => {
                 ADD
             `,
         ),
-    )
+    );
 
     it(
         "simple if-else",
@@ -81,7 +82,7 @@ describe("asm coverage", () => {
                 IFELSE
             `,
         ),
-    )
+    );
 
     it(
         "while loop with break",
@@ -103,7 +104,7 @@ describe("asm coverage", () => {
                 WHILEBRK
             `,
         ),
-    )
+    );
 
     it(
         "dictionary",
@@ -124,7 +125,7 @@ describe("asm coverage", () => {
                 THROWARG 11
             `,
         ),
-    )
+    );
 
     it(
         "dictionary 2",
@@ -146,7 +147,7 @@ describe("asm coverage", () => {
             `,
             2,
         ),
-    )
+    );
 
     it(
         "try without throw",
@@ -163,7 +164,7 @@ describe("asm coverage", () => {
                 TRY
             `,
         ),
-    )
+    );
 
     it(
         "try with throw",
@@ -180,7 +181,7 @@ describe("asm coverage", () => {
                 TRY
             `,
         ),
-    )
+    );
 
     it(
         "nested try with rethrow",
@@ -202,5 +203,5 @@ describe("asm coverage", () => {
                 TRY
             `,
         ),
-    )
-})
+    );
+});
