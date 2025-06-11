@@ -77,6 +77,9 @@ tasm decompiled.tasm -o recompiled.boc
 tasm contract.tasm -f hex > contract.hex
 tdisasm contract.hex -f hex -o contract.tasm
 
+# Assemble from string directly
+tasm -s "PUSHINT_4 1" -f hex
+
 # Disassemble from hex/base64 strings directly
 tdisasm -s "b5ee9c72410102010027000114ff008e83f4a413ed43d901002fa64ce73b5134348034c7f487f4fffd0115501b05485b1460ec17065c" -f hex -o contract.tasm
 tdisasm -s "te6cckEBAgEAJwABFP8AjoP0pBPtQ9kBAC+mTOc7UTQ0gDTH9If0//0BFVAbBUhbFGDsFwZc" -f base64

@@ -23,6 +23,7 @@ tasm input.tasm
 
 - `-o, --output <file>` - Output file path
 - `-f, --format <format>` - Output format: `binary` (default), `hex`, `base64`
+- `-s, --string <data>` - Input TASM assembly as a string instead of file
 - `--verbose` - Verbose output
 - `-h, --help` - Show help
 - `-v, --version` - Show version
@@ -41,6 +42,9 @@ tasm contract.tasm --verbose
 
 # Output to stdout (hex)
 tasm contract.tasm -f hex
+
+# Assemble from string directly
+tasm -s "PUSHINT_4 1" -f hex
 ```
 
 ## 🔍 Disassembler (tdisasm)
@@ -119,6 +123,7 @@ tasm decompiled.tasm -o recompiled.boc
 **Assembler:**
 
 - `.tasm` - TVM Assembly text files
+- `string` - TASM assembly provided as a string argument
 
 **Disassembler:**
 
