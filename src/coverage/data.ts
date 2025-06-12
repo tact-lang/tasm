@@ -1,4 +1,4 @@
-import type {Step, TraceInfo} from "../trace"
+import type {FuncSourceLoc, Step, TraceInfo} from "../trace"
 
 export type Line = {
     readonly line: string
@@ -9,6 +9,7 @@ export type Covered = {
     readonly $: "Covered"
     readonly hits: number
     readonly gasCosts: readonly number[]
+    readonly pos: readonly FuncSourceLoc[]
 }
 
 export type Uncovered = {
@@ -65,6 +66,7 @@ export const buildLineInfo = (trace: TraceInfo, asm: string): readonly Line[] =>
                     $: "Covered",
                     hits: gasInfo.length,
                     gasCosts: gasInfo,
+                    pos: [],
                 },
             }
         }
@@ -115,6 +117,21 @@ export const buildFuncLineInfo = (traces: TraceInfo[], funcCode: string): Line[]
         const infos = perLineStepsArray.get(idx + 1)
         if (infos) {
             const gasInfo = infos.flatMap(it => it.map(step => normalizeGas(step.gasCost)))
+            
+            const positions: FuncSourceLoc[] = []
+            const seenPositions: Set<string> = new Set()
+            
+            for (const stepGroup of infos) {
+                for (const step of stepGroup) {
+                    if (step.funcLoc) {
+                        const posKey = `${step.funcLoc.pos}-${step.funcLoc.length}`
+                        if (!seenPositions.has(posKey)) {
+                            seenPositions.add(posKey)
+                            positions.push(step.funcLoc)
+                        }
+                    }
+                }
+            }
 
             return {
                 line,
@@ -122,6 +139,7 @@ export const buildFuncLineInfo = (traces: TraceInfo[], funcCode: string): Line[]
                     $: "Covered",
                     hits: infos.length,
                     gasCosts: gasInfo,
+                    pos: positions
                 },
             }
         }
@@ -158,6 +176,7 @@ export const isExecutableLine = (line: string): boolean => {
         trimmed !== "}" && // close braces
         !trimmed.includes("} {") && // IFREFELSEREF
         !trimmed.includes(";;") && // FunC comment line
+        trimmed !== ");" && // end of tensor
         !trimmed.includes("#pragma ") &&
         !trimmed.includes("#include") &&
         !trimmed.includes("inline {") && // function signature

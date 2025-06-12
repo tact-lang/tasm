@@ -5,6 +5,7 @@ import * as path from "node:path"
 import * as fs from "node:fs"
 import {collectAsmCoverage, collectFuncCoverage} from "../index"
 import type {CoverageSummary} from "../data"
+import {loadFuncMapping} from "../../trace"
 
 const USAGE =
     "Usage: coverage <boc-file-path> <log-file-path> [<func-source-path> <func-mapping-path>]"
@@ -34,7 +35,8 @@ const main = () => {
     const logs = readFileSync(logPath, "utf8")
 
     if (funcSources !== undefined && funcMappingPath !== undefined) {
-        const {lines, summary} = collectFuncCoverage(cell, logs, funcSources, funcMappingPath)
+        const funcMapping = loadFuncMapping(readFileSync(funcMappingPath, "utf8"))
+        const {lines, summary} = collectFuncCoverage(cell, logs, funcSources, funcMapping)
 
         printSummary("func", summary)
 

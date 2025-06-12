@@ -1,6 +1,11 @@
-import type {CoverageSummary, Line} from "./data";
-import { generateCoverageSummary} from "./data"
+import type {CoverageSummary, Line} from "./data"
+import {generateCoverageSummary} from "./data"
 import {MAIN_TEMPLATE, SUMMARY_TEMPLATE} from "./templates/templates"
+
+export type HtmlOptions = {
+    readonly gasBackground?: boolean
+    readonly gasDetails?: boolean
+}
 
 const templates = {
     main: MAIN_TEMPLATE,
@@ -38,18 +43,76 @@ export const calculateTotalGas = (gasCosts: readonly number[]): number => {
     return gasCosts.reduce((sum, gas) => sum + gas, 0)
 }
 
+const escapeHtml = (text: string): string => {
+    return text.replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#039;")
+}
+
+const generateCodeWithHighlighting = (line: string, positions: readonly {readonly pos: number; readonly length: number}[]): string => {
+    if (positions.length === 0) {
+        return escapeHtml(line)
+    }
+    
+    // Sort positions by start position to handle overlapping correctly
+    const sortedPositions = [...positions]
+        .filter(pos => pos.pos >= 0 && pos.length > 0 && pos.pos < line.length)
+        .sort((a, b) => a.pos - b.pos)
+    
+    if (sortedPositions.length === 0) {
+        return escapeHtml(line)
+    }
+    
+    let result = ""
+    let lastIndex = 0
+    
+    for (const pos of sortedPositions) {
+        const start = Math.max(pos.pos, lastIndex)
+        const end = Math.min(pos.pos + pos.length, line.length)
+        
+        // Skip if this position overlaps with the previous one
+        if (start >= end) continue
+        
+        // Add text before highlight
+        if (start > lastIndex) {
+            result += escapeHtml(line.substring(lastIndex, start))
+        }
+        
+        // Add highlighted text
+        result += `<span class="code-highlight">${escapeHtml(line.substring(start, end))}</span>`
+        
+        lastIndex = end
+    }
+    
+    // Add remaining text after last highlight
+    if (lastIndex < line.length) {
+        result += escapeHtml(line.substring(lastIndex))
+    }
+    
+    return result
+}
+
 const generateLineHtml = (
     line: Line,
     index: number,
     maxGasPerLine: number,
     totalGas: number,
+    options: HtmlOptions,
 ): string => {
+    const {
+        gasBackground = true,
+        gasDetails = true,
+    } = options
+
     const lineNumber = index + 1
     const className = line.info.$
 
     let gasHtml = `<div class="gas"></div>`
     let hitsHtml = `<div class="hits"></div>`
     let gasPercentStyle = ""
+    let codeHtml = escapeHtml(line.line)
 
     if (line.info.$ === "Covered") {
         const gasInfo = line.info.gasCosts
@@ -59,20 +122,31 @@ const generateLineHtml = (
         const gasPercentage = Math.sqrt(totalGasCost / maxGasPerLine) * 100
         const totalGasPercentage = totalGas === 0 ? 0 : (totalGasCost / totalGas) * 100
 
-        gasPercentStyle = ` style="--gas-percent:${gasPercentage.toFixed(4)}%" data-gas-percent="${totalGasPercentage.toFixed(2)}%"`
+        if (gasBackground) {
+            gasPercentStyle = ` style="--gas-percent:${gasPercentage.toFixed(4)}%" data-gas-percent="${totalGasPercentage.toFixed(2)}%"`
+        }
 
-        gasHtml = `<div class="gas">
-            <span class="gas-detailed">${detailedGasCost}</span>
-            <span class="gas-sum">${totalGasCost}</span>
-        </div>`
+        if (gasDetails) {
+            gasHtml = `<div class="gas">
+                <span class="gas-detailed">${detailedGasCost}</span>
+                <span class="gas-sum">${totalGasCost}</span>
+            </div>`
+        }
         hitsHtml = `<div class="hits" title="Number of times executed">${line.info.hits}</div>`
+        
+        if (line.info.pos.length > 0) {
+            codeHtml = generateCodeWithHighlighting(line.line, line.info.pos.map(funcLoc => ({
+                pos: funcLoc.pos,
+                length: funcLoc.length
+            })))
+        }
     }
 
     return `<div class="line ${className}" id="L${lineNumber}"${gasPercentStyle} data-line-number="${lineNumber}">
     <div class="line-number">${lineNumber}</div>
     ${gasHtml}
     ${hitsHtml}
-    <pre>${line.line.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;").replaceAll("'", "&#039;")}</pre>
+    <pre>${codeHtml}</pre>
 </div>`
 }
 
@@ -98,7 +172,7 @@ const generateInstructionRowsHtml = (summary: CoverageSummary): string => {
         .join("\n")
 }
 
-export const generateHtml = (lines: readonly Line[]): string => {
+export const generateHtml = (lines: readonly Line[], options: HtmlOptions = {}): string => {
     const summary = generateCoverageSummary(lines)
 
     const maxGas = Math.max(
@@ -108,7 +182,7 @@ export const generateHtml = (lines: readonly Line[]): string => {
     )
 
     const htmlLines = lines
-        .map((line, index) => generateLineHtml(line, index, maxGas, summary.totalGas))
+        .map((line, index) => generateLineHtml(line, index, maxGas, summary.totalGas, options))
         .join("\n")
 
     const templateData = {

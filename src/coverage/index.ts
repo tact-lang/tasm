@@ -2,7 +2,7 @@ import type {Cell} from "@ton/core"
 import type { Mapping} from "../runtime";
 import {compileCellWithMapping, decompileCell} from "../runtime"
 import {print, parse} from "../text"
-import {createMappingInfo, createTraceInfoPerTransaction, loadFuncMapping} from "../trace"
+import {createMappingInfo, createTraceInfoPerTransaction, FuncMapping, loadFuncMapping} from "../trace"
 import {buildFuncLineInfo, buildLineInfo, generateCoverageSummary} from "./data"
 import {readFileSync} from "node:fs"
 
@@ -22,12 +22,11 @@ export function collectFuncCoverage(
     cell: Cell,
     logs: string,
     funcSources: string,
-    funcMappingPath: string,
+    funcMapping: FuncMapping,
 ) {
     const [_, mapping] = recompileCell(cell, true)
     const info = createMappingInfo(mapping)
 
-    const funcMapping = loadFuncMapping(readFileSync(funcMappingPath, "utf8"))
     const traceInfos = createTraceInfoPerTransaction(logs, info, funcMapping)
     const func = readFileSync(funcSources, "utf8")
     const combinedLines = buildFuncLineInfo(traceInfos, func)

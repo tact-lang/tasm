@@ -10,6 +10,7 @@ export type ExtendedGetResult = ContractGetMethodResult & {vmLogs: string}
 export const executeInstructions = async (
     code: i.Instr[],
     id: number = 0,
+    stackBuilder: TupleBuilder | undefined = undefined,
 ): Promise<[TupleReader, string]> => {
     class TestContract implements Contract {
         public readonly address: Address
@@ -33,7 +34,7 @@ export const executeInstructions = async (
             provider: ContractProvider,
             id: number,
         ): Promise<[TupleReader, string]> {
-            const builder = new TupleBuilder()
+            const builder = stackBuilder ?? new TupleBuilder()
             const res = (await provider.get(id, builder.build())) as ExtendedGetResult
             return [res.stack, res.vmLogs]
         }

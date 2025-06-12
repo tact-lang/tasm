@@ -340,6 +340,21 @@ export const MAIN_TEMPLATE = `<!doctype html>
             .show-total-gas .gas-detailed {
                 display: none;
             }
+
+            /* Code highlighting styles */
+            .code-highlight {
+                background-color: rgba(255, 165, 0, 0.3);
+                border-radius: 2px;
+                padding: 0 1px;
+                font-weight: 600;
+                color: #333;
+                box-shadow: 0 0 0 1px rgba(255, 165, 0, 0.5);
+            }
+
+            .Covered .code-highlight {
+                background-color: rgba(107, 204, 107, 0.6);
+                box-shadow: 0 0 0 1px rgba(107, 204, 107, 0.8);
+            }
         </style>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
