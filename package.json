@@ -1,6 +1,6 @@
 {
-    "name": "@tact-lang/ton-assembly",
-    "version": "0.0.1",
+    "name": "ton-assembly-test-dev",
+    "version": "0.0.7",
     "description": "TON assembler and disassembler",
     "keywords": [
         "ton",
@@ -88,6 +88,7 @@
         "!*.js.map"
     ],
     "packageManager": "yarn@4.6.0",
+    "main": "dist/index.js",
     "bin": {
         "tasm": "./dist/cli/assembler.js",
         "tdisasm": "./dist/cli/disassembler.js"
