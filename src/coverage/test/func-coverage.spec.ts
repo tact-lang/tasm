@@ -15,7 +15,7 @@ const FIFT_BIN = "/Users/petrmakhnev/ton-tolk/cmake-build-debug/crypto/fift"
 
 describe("asm coverage", () => {
     const test =
-        (name: string, code: string, id: number = 0) =>
+        (_name: string, code: string) =>
         async () => {
             const funcSourcesPath = `${__dirname}/in.fc`
             await fs.writeFile(funcSourcesPath, normalizeIndentation(code))

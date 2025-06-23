@@ -5,13 +5,13 @@ import {CodeBuilder} from "./builder"
 import {instr} from "./instr"
 import {matchingRule} from "./layout"
 
-export const compileInstructions: $.Store<Instr[]> = (b: CodeBuilder, instructions: Instr[]) => {
+export const compileInstructions = (b: CodeBuilder, instructions: Instr[], skipRefs: boolean) => {
     for (let index = 0; index < instructions.length; index++) {
         const instruction = instructions[index]
         if (!instruction) break
         const builderBefore = new CodeBuilder().storeBuilder(b)
 
-        const overflow = safeStore(b, instruction)
+        const overflow = safeStore(b, instruction, skipRefs)
         if (!overflow) {
             // fast path
             continue
@@ -46,7 +46,12 @@ export const compileInstructions: $.Store<Instr[]> = (b: CodeBuilder, instructio
         }
 
         // Create a new ref and compile the remaining instruction to it
-        $.PSEUDO_PUSHREF.store(builderBefore, c.PSEUDO_PUSHREF($.code(remainingInstructions)))
+        process.env["SKIP_REF"] = String(skipRefs)
+        $.PSEUDO_PUSHREF_ALWAYS.store(
+            builderBefore,
+            c.PSEUDO_PUSHREF($.code(remainingInstructions)),
+        )
+        process.env["SKIP_REF"] = undefined
         b.reinitFrom(builderBefore)
         // All remaining instructions already processed in PSEUDO_PUSHREF,
         // so we need to return here
@@ -54,9 +59,11 @@ export const compileInstructions: $.Store<Instr[]> = (b: CodeBuilder, instructio
     }
 }
 
-const safeStore = (b: CodeBuilder, t: Instr): boolean => {
+const safeStore = (b: CodeBuilder, t: Instr, skipRefs: boolean): boolean => {
     try {
+        process.env["SKIP_REF"] = String(skipRefs)
         instr.store(b, t)
+        process.env["SKIP_REF"] = undefined
         if (b.bits >= 1023) {
             return true
         }

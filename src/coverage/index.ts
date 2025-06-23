@@ -2,7 +2,8 @@ import type {Cell} from "@ton/core"
 import type { Mapping} from "../runtime";
 import {compileCellWithMapping, decompileCell} from "../runtime"
 import {print, parse} from "../text"
-import {createMappingInfo, createTraceInfoPerTransaction, FuncMapping, loadFuncMapping} from "../trace"
+import type { FuncMapping} from "../trace";
+import {createMappingInfo, createTraceInfoPerTransaction} from "../trace"
 import {buildFuncLineInfo, buildLineInfo, generateCoverageSummary} from "./data"
 import {readFileSync} from "node:fs"
 

@@ -1,6 +1,6 @@
 {
     "name": "ton-assembly-test-dev",
-    "version": "0.0.7",
+    "version": "0.0.13",
     "description": "TON assembler and disassembler",
     "keywords": [
         "ton",

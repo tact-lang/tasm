@@ -9,6 +9,7 @@ import type {DictionaryValue} from "../dict/Dictionary"
 import {Dictionary} from "../dict/Dictionary"
 import {JMPREF} from "./constructors"
 import {rangeToName} from "./instr-mapping-gen"
+import {compileInstructions} from "./compile"
 
 // TODO: split:
 // 1. like `constructors.ts`
@@ -90,10 +91,11 @@ const processMappingInstructions = (mapping: Mapping, b: CodeBuilder) =>
 export const codeSlice = (refs: Type<number>, bits: Type<number>): Type<Code> => {
     return {
         store: (b, code) => {
+            const skipRefs = process.env["SKIP_REF"] === "true"
             // TODO: extract logic of serialization to codeType
 
             if (code.$ === "Instructions") {
-                const [cell, mapping] = compileCellWithMapping(code.instructions)
+                const [cell, mapping] = compileCellWithMapping(code.instructions, {skipRefs})
 
                 const slice = cell.asSlice()
                 refs.store(b, slice.remainingRefs)
@@ -135,7 +137,7 @@ export const codeSlice = (refs: Type<number>, bits: Type<number>): Type<Code> =>
 
             // TODO: move to codeType and rename to code
             try {
-                return decompiledCode(codeType().load(slice))
+                return decompiledCode(codeType(false).load(slice))
             } catch {
                 // continue with fallback
             }
@@ -148,8 +150,10 @@ export const codeSlice = (refs: Type<number>, bits: Type<number>): Type<Code> =>
 // TODO: ref(code) === ^code
 export const refCodeSlice: Type<Code> = {
     store: (b, code) => {
+        const skipRefs = process.env["SKIP_REF"] === "true"
+
         if (code.$ === "Instructions") {
-            const [cell, mapping] = compileCellWithMapping(code.instructions)
+            const [cell, mapping] = compileCellWithMapping(code.instructions, {skipRefs})
             b.storeRef(cell)
 
             b.pushMappings(mapping)
@@ -175,12 +179,14 @@ const processCell = (cell: Cell): Instr[] => {
         return [c.PSEUDO_EXOTIC(exotic.load(cell.beginParse(true)))]
     }
 
-    return codeType().load(cell.asSlice())
+    return codeType(false).load(cell.asSlice())
 }
 
 export const inlineCodeSlice = (bits: Type<number>): Type<Code> => {
     return {
         store: (b, code) => {
+            const skipRefs = process.env["SKIP_REF"] === "true"
+
             if (code.$ === "Raw") {
                 const slice = code.slice
                 const length = slice.remainingBits
@@ -188,7 +194,7 @@ export const inlineCodeSlice = (bits: Type<number>): Type<Code> => {
                 bits.store(b, y)
                 b.storeSlice(slice)
             } else {
-                const [cell, mapping] = compileCellWithMapping(code.instructions)
+                const [cell, mapping] = compileCellWithMapping(code.instructions, {skipRefs})
                 const slice = cell.asSlice()
 
                 const length = slice.remainingBits
@@ -212,7 +218,7 @@ export const inlineCodeSlice = (bits: Type<number>): Type<Code> => {
             b.storeBits(r)
             const slice = b.asSlice()
             try {
-                return decompiledCode(codeType().load(slice))
+                return decompiledCode(codeType(false).load(slice))
             } catch {
                 // continue with fallback
             }
@@ -342,7 +348,7 @@ export const dictionary = (keyLength: number): Type<Dict> => {
             )
 
             const methods = [...dict].map(([key, cell]) => {
-                return decompiledMethod(key, codeType().load(cell.asSlice()))
+                return decompiledMethod(key, codeType(false).load(cell.asSlice()))
             })
 
             // const b = new CodeBuilder()
@@ -359,6 +365,8 @@ export const dictionary = (keyLength: number): Type<Dict> => {
             return decompiledDict(methods)
         },
         store: (b, dict) => {
+            const skipRef = process.env["SKIP_REF"] === "true"
+
             if (dict.$ === "RawDict") {
                 b.storeRef(dict.slice.asCell())
             }
@@ -371,7 +379,9 @@ export const dictionary = (keyLength: number): Type<Dict> => {
                 )
                 for (const method of dict.methods) {
                     const {id, instructions} = method
-                    const [cell, mapping] = compileCellWithMapping(instructions)
+                    const [cell, mapping] = compileCellWithMapping(instructions, {
+                        skipRefs: skipRef,
+                    })
                     dictMappings.push(mapping)
                     dictionary.set(id, cell)
                 }
@@ -582,10 +592,31 @@ export const PSEUDO_PUSHREF: Type<c.PSEUDO_PUSHREF> = {
         throw new Error("unexpected PSEUDO_PUSHREF")
     },
     store: (b, val) => {
+        const skipRefs = process.env["SKIP_REF"] === "true"
+
         if (val.arg0.$ === "Raw") {
             b.storeRef(val.arg0.slice.asCell())
         } else {
-            const [cell, mapping] = compileCellWithMapping(val.arg0.instructions)
+            if (skipRefs) {
+                compileInstructions(b, val.arg0.instructions, true)
+                return
+            }
+            PSEUDO_PUSHREF_ALWAYS.store(b, val)
+        }
+    },
+}
+
+export const PSEUDO_PUSHREF_ALWAYS: Type<c.PSEUDO_PUSHREF> = {
+    load: _s => {
+        throw new Error("unexpected PSEUDO_PUSHREF")
+    },
+    store: (b, val) => {
+        const skipRefs = process.env["SKIP_REF"] === "true"
+
+        if (val.arg0.$ === "Raw") {
+            b.storeRef(val.arg0.slice.asCell())
+        } else {
+            const [cell, mapping] = compileCellWithMapping(val.arg0.instructions, {skipRefs})
 
             // implicit JMPREF
             mapping.instructions.splice(0, 0, {

@@ -34,13 +34,13 @@ export const instr: $.Type<Instr> = {
 
 export type codeType = Instr[]
 
-export const codeType = (): $.Type<codeType> => {
+export const codeType = (skipRefs: boolean): $.Type<codeType> => {
     const processCell = (cell: G.Cell): Instr[] => {
         if (cell.isExotic) {
             return [parseExotic(cell)]
         }
 
-        return codeType().load(cell.asSlice())
+        return codeType(skipRefs).load(cell.asSlice())
     }
     return {
         load: slice => {
@@ -65,7 +65,7 @@ export const codeType = (): $.Type<codeType> => {
             return arr
         },
         store(b, t) {
-            compileInstructions(b, t)
+            compileInstructions(b, t, skipRefs)
         },
     }
 }
@@ -152,19 +152,26 @@ export const parseExotic = (cell: G.Cell): Instr => {
     return PSEUDO_EXOTIC($.exotic.load(slice))
 }
 
+export interface CompileOpts {
+    readonly skipRefs: boolean
+}
+
 export const compile = (instructions: Instr[]): Buffer => {
     return compileCell(instructions).toBoc()
 }
 
-export const compileCell = (instructions: Instr[]): G.Cell => {
+export const compileCell = (instructions: Instr[], opts?: CompileOpts): G.Cell => {
     const b = new CodeBuilder()
-    codeType().store(b, instructions)
+    codeType(opts?.skipRefs ?? false).store(b, instructions)
     return b.asCell()
 }
 
-export const compileCellWithMapping = (instructions: Instr[]): [G.Cell, Mapping] => {
+export const compileCellWithMapping = (
+    instructions: Instr[],
+    opts?: CompileOpts,
+): [G.Cell, Mapping] => {
     const b = new CodeBuilder()
-    codeType().store(b, instructions)
+    codeType(opts?.skipRefs ?? false).store(b, instructions)
     return b.build()
 }
 
@@ -178,7 +185,7 @@ export const decompileCell = (cell: G.Cell): Instr[] => {
     if (cell.isExotic) {
         return [parseExotic(cell)]
     }
-    return codeType().load(cell.asSlice())
+    return codeType(false).load(cell.asSlice())
 }
 
 function assert(cond: boolean) {
