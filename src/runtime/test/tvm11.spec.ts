@@ -250,13 +250,13 @@ describe("TVM11 opcodes", () => {
     )
 
     it(
-        "INMSGPARAM in Tolk code",
+        "INMSGPARAMS in Tolk code",
         test(
             `
                 fun inMsgParams(): tuple asm "INMSGPARAMS"
             
                 fun onInternalMessage(in: InMessage) {
-                    debug.print(inMsgParams);
+                    debug.print(inMsgParams());
                 }
             `,
             `
@@ -266,9 +266,34 @@ describe("TVM11 opcodes", () => {
                         DROP
                         INMSG_BOUNCED
                         THROWIF_SHORT 0
-                        PUSHCONT_SHORT {
-                            INMSGPARAMS
-                        }
+                        INMSGPARAMS
+                        DUMP s0
+                        DROP
+                    }
+                ]
+                DICTIGETJMPZ
+                THROWARG 11
+            `,
+        ),
+    )
+    it(
+        "INMSGPARAM in Tolk code",
+        test(
+            `
+                fun inMsgParam(): tuple asm "1 INMSGPARAM"
+            
+                fun onInternalMessage(in: InMessage) {
+                    debug.print(inMsgParam());
+                }
+            `,
+            `
+                SETCP 0
+                DICTPUSHCONST 19 [
+                    0 => {
+                        DROP
+                        INMSG_BOUNCED
+                        THROWIF_SHORT 0
+                        INMSG_BOUNCED
                         DUMP s0
                         DROP
                     }
