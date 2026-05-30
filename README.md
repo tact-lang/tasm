@@ -1,3 +1,5 @@
+> Deprecated, use https://github.com/ton-blockchain/tasm
+
 # TON Assembly
 
 This repository contains an assembler and disassembler implementation for TVM bitcode.
