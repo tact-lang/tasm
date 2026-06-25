@@ -1,4 +1,5 @@
-> Deprecated, use https://github.com/ton-blockchain/tasm
+> [!CAUTION]
+> Deprecated. Use [ton-blockchain/tasm](https://github.com/ton-blockchain/tasm/) instead.
 
 # TON Assembly
 
