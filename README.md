@@ -1,5 +1,5 @@
 > [!CAUTION]
-> Deprecated. Use [ton-blockchain/tasm](https://github.com/ton-blockchain/tasm/) instead.
+> Deprecated. Use [@ton/tasm](https://www.npmjs.com/package/@ton/tasm) instead.
 
 # TON Assembly
 
