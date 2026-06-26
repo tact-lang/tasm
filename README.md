@@ -1,3 +1,6 @@
+> [!CAUTION]
+> Deprecated. Use [@ton/tasm](https://www.npmjs.com/package/@ton/tasm) instead.
+
 # TON Assembly
 
 This repository contains an assembler and disassembler implementation for TVM bitcode.
